@@ -1,0 +1,28 @@
+.mljs-title{
+    background-color: rgba(255,255,255,0.15);
+    border-radius: 15px 15px 0 0;
+
+    cursor: pointer;
+
+    /*flex*/align-items: center;
+    /*flex*/display:flex;
+    /*flex*/justify-content: center;
+
+    margin-bottom: 0;
+    padding:10px;
+
+    /*text*/color: var(--js-background-color);
+    /*text*/font-family: var(--js-font-family);
+    /*text*/font-weight: bold;
+}
+.mljs-title-highlight{
+    background-color: var(--js-background-color);
+    /*flex*/align-items: end;
+    /*flex*/display:flex;
+    /*flex*/justify-content: flex-end;
+    padding: 0;
+    /*size*/height: 30px;
+    /*size*/width: 30px;
+    /*text*/color: var(--js-color);
+    /*text*/font-size: medium;
+}

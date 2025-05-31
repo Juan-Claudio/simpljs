@@ -1,0 +1,12 @@
+@import 'variables.css';
+
+@import 'common.css';
+
+/*components*/
+@import '../components/header/header.css';
+@import '../components/nav/nav.css';
+@import '../components/main/body.css';
+@import '../components/footer/footer.css';
+@import '../components/modalLicense/modalLicense.css';
+
+@import 'helpers.css';

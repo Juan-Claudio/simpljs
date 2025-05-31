@@ -1,0 +1,17 @@
+.mljs-main-container{
+    border:4px solid rgba(255,255,255,0.15);
+
+    /*flex*/align-items: center;
+    /*flex*/display: flex;
+    /*flex*/flex-direction: column;
+    /*flex*/justify-content: center;
+
+    min-height:200px;
+}
+.mljs-main-container > p{
+    padding:10px;
+    text-align: justify;
+}
+.mljs-main-container b{
+    color:var(--mljs-primary);
+}

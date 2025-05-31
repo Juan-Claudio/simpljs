@@ -1,0 +1,14 @@
+.mljs-btn{
+    border:1px transparent solid;
+    border-radius: 5px;
+    margin:5px;
+}
+.mljs-btn:hover{
+    border-color:#ccc;
+}
+.mljs-btn-1st{
+    background-color: var(--mljs-primary);
+}
+.mljs-btn-2nd{
+    background-color: var(--mljs-secondary);
+}

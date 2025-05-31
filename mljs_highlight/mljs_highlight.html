@@ -1,0 +1,28 @@
+<html>
+    <head>
+        <meta charset="utf8">
+        <title>Mljs highlight</title>
+        <style>
+            body{ background-color: black; color:white; }
+            .instance{ color:#006eff; }
+            .div, .endiv{ color:#ffdd00; }
+            .p, .endp{ color:#ff6f00; }
+            .img{ color:#c5ef71; }
+            .brace{color:#868686;}
+            .attribute{color:rgb(78, 146, 146)}
+            .value{font-style: italic;color:#bbbbbb;}
+            .tag{font-weight: bold;}
+        </style>
+    </head>
+<body>
+    <pre>
+
+    <span class="instance">element</span>
+    .<span class="tag div">div</span><span class="brace">({</span> <span class="attribute">class</span>: <span class="value">"example"</span> <span class="brace">})</span>
+        .<span class="tag p">p</span><span class="brace">({</span> <span class="attribute">textContent</span>: <span class="value">"Example text"</span> <span class="brace">})</span>.<span class="tag endp">end</span><span class="brace">()</span>
+        .<span class="tag img">img</span><span class="brace">({</span> <span class="attribute">src</span>: <span class="value">"example.png"</span>, <span class="attribute">alt</span>: <span class="value">"example"</span>, <span class="attribute">title</span>: <span class="value">"example"</span> <span class="brace">})</span>
+    .<span class="tag endiv">end</span><span class="brace">()</span>;
+    
+    </pre>
+</body>
+</html>

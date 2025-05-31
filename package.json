@@ -1,0 +1,9 @@
+{
+  "name": "simpljs",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Write components and attach events simply.",
+  "main": "index.js",
+  "author": "Juan-Claudio",
+  "license": "MIT"
+}

@@ -1,0 +1,197 @@
+<h1 id="simpljs">Simpljs</h1>
+<p><a href="https://www.npmjs.com/package/simpljs"><img src="https://img.shields.io/npm/v/simpljs.svg" alt="npm version" /></a>
+<a href="https://www.npmjs.com/package/simpljs"><img src="https://img.shields.io/npm/dm/simpljs.svg" alt="npm downloads" /></a>
+<a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT" /></a>
+<a href="https://github.com/yourusername/simpljs/actions"><img src="https://img.shields.io/github/actions/workflow/status/yourusername/simpljs/ci.yml?branch=main" alt="Build Status" /></a>
+<a href="https://github.com/prettier/prettier"><img src="https://img.shields.io/badge/code_style-prettier-ff69b4.svg" alt="Code Style: Prettier" /></a></p>
+<h2 id="simpljs-1">Simpljs</h2>
+<p><strong>Pronounced</strong> “simplis” — <em>a lightweight JavaScript library for simple event
+handling and simple html components creation in component-structured projects.</em></p>
+<h2 id="features">Features</h2>
+<ul>
+<li>Minimalist and lightweight</li>
+<li>Simple integration with component-based architectures</li>
+<li>Custom event system with intuitive API</li>
+<li>Custom html component syntax using only javascript vanilla</li>
+</ul>
+<h2 id="installation">Installation</h2>
+<pre><code class="bash language-bash">npm install simpljs
+</code></pre>
+<p>This will install the library along with the following default files:
+<code>node_modules/simpljs/html/Dom.js</code>
+<code>node_modules/simpljs/html/Slab.js</code>
+<code>node_modules/simpljs/event/Arm.js</code>
+<code>node_modules/simpljs/event/Waiter.js</code></p>
+<h2 id="recommendedprojectstructure">Recommended Project Structure</h2>
+<ul>
+<li>Common resources
+<code>src/events/common.acts.js</code>
+<code>src/events/common.events.js</code>
+<code>src/styles/common.[s]css</code>
+<code>src/styles/variables.[s]css</code>
+<code>src/styles/helpers.[s]css</code></li>
+<li>Component-specific files
+<code>src/components/myComponents/myComponent1.acts.js</code>
+<code>src/components/myComponents/myComponent1.events.js</code>
+<code>src/components/myComponents/myComponent1.[html.js|mljs]</code>
+<code>src/components/myComponents/myComponent1.[s]css</code></li>
+</ul>
+<h2 id="vocabulary">Vocabulary</h2>
+<ul>
+<li><strong>act</strong> - <em>simple function that can be combined with another acts to create action.</em></li>
+<li><strong>action</strong> - <em>event handler or function composed by various acts.</em></li>
+<li><strong>anchor</strong> - <em>element delegated, where the event is virtually attached.</em></li>
+<li><strong>arm</strong> - <em>single event attached to an anchor. Various arm in a waiter.</em></li>
+<li><strong>event</strong> - <em>event type: 'click', 'dbclick'…</em></li>
+<li><strong>harbor</strong> - <em>element where the event listeners will be attached. Delegation.</em></li>
+<li><strong>snap</strong> - <em>event object.</em></li>
+<li><strong>waiter</strong> - <em>class which handle all events attached to the harbor.</em></li>
+</ul>
+<h2 id="uses">Uses</h2>
+<h3 id="waiterpartevents">Waiter part (events)</h3>
+<ol>
+<li>register acts globally - <em>simple functions to compose complex one</em></li>
+</ol>
+<pre><code class="js language-js">Waiter.addAct({
+  act1(snap) {},
+  act2(snap) {},
+  act3(snap) {},
+  act4(snap) {},
+  act5(snap) {},
+});
+</code></pre>
+<ol start="2">
+<li>register arms in a waiter - <em>simple events to delegate to a waiter</em></li>
+</ol>
+<pre><code class="js language-js">const harborWaiter = new Waiter(harbor);
+const triggered_once_arm = harborWaiter.once //do all acts it contains once
+  .on("event") //on click, on dbclick, ...
+  .at(".anchor") //selector: clicking, dbclicking... on this element querySelector(anchor)
+  .arm(["act1", "act2"]) //merge 2 acts =&gt; called the first time the event triggered
+  .then.arm(act3) //call this act the second time the event triggered
+  //third trigger =&gt; the arm is disabled cause of the 'once' option
+  .getArmId(); //get the composed id to get it from the Waiter class
+
+const toggle_arm = harborWaiter
+  .on("click")
+  .at("#anchor1")
+  .toggle(["act1", "act2", "act3"]) //each next event call the next act and start again
+  //toggle() disable option 'once'
+  .getArmId();
+
+const swap_arm = harborWaiter
+  .on("dbclick")
+  .at("#anchor1")
+  .arm("act1") // 1st trigger =&gt; do act1
+  .then.arm(["act2", "act3"]) //2nd trigger =&gt; do act2+act3
+  .arm("act4") // 3rd and all the next trigger =&gt; do act4
+  .getArmId();
+
+const passive_arm = harborWaiter.passive //disable preventDefault()
+  .on("touchstart")
+  .at('[data-custom="anchor3"]')
+  .arm("act5")
+  .getArmId();
+
+//with option 'disable' this arm will not be attached to the waiter
+//when will wait
+//later it's possible to harborWaiter.enable(disabled_arm)
+//and then harborWaiter.wait() to reload events
+//it's possible to harborWaiter.disable(triggered_once_arm) too
+//and reload to active this arm again
+const disabled_arm = harborWaiter.disabled
+  .on("touchstart")
+  .at("#anchor4")
+  .arm(["act5", "act1"])
+  .getArmId();
+</code></pre>
+<ol start="3">
+<li>activate the waiter</li>
+</ol>
+<pre><code class="js language-js">//will prepare all arms and create all event listeners needed
+harborWaiter.wait();
+</code></pre>
+<ol start="4">
+<li>remove or add event in the listener</li>
+</ol>
+<pre><code class="js language-js">harborWaiter.disable(myArmToDisable);
+harborWaiter.enable(myArmToEnable);
+harborWaiter.wait();
+</code></pre>
+<ol start="5">
+<li>Stop waiting all events from the waiter</li>
+</ol>
+<pre><code class="js language-js">harborWaiter.bye();
+</code></pre>
+<h3 id="mljspart">Mljs part</h3>
+<p>Soon, remain adjustment to do.</p>
+<h4 id="fileformat">File format</h4>
+<p>Files ending with .html.js or .mljs need a custom formatting style for clarity.</p>
+<p>If you use Prettier, we recommend adding <code>**/*.html.js</code> or <code>**/*.mljs</code> to your
+.prettierignore.</p>
+<p>Alternatively, if you'd like automatic formatting support, a solution is planned
+for future versions to propose custom highlight.</p>
+<h4 id="statements">Statements</h4>
+<ul>
+<li>conditions</li>
+</ul>
+<pre><code class="js language-js">.if(condition).elseif(condition).else().endif()
+</code></pre>
+<ul>
+<li>loop</li>
+</ul>
+<pre><code class="js language-js">.loop(Array).endloop()
+</code></pre>
+<ul>
+<li>tags</li>
+</ul>
+<pre><code class="js language-js">element
+  .div({ class: "example" })
+  .p({ textContent: "Example text" })
+  .end()
+  .img({ src: "example.png", alt: "example", title: "example" })
+  .end();
+</code></pre>
+<p>or</p>
+<pre><code class="js language-js">element
+  .div({ class: "example" })
+  .p({ textContent: "Example text" })
+  .end(Mljs.P)
+  .img({ src: "example.png", alt: "example", title: "example" })
+  .end(Mlj.DIV);
+</code></pre>
+<p>or</p>
+<pre><code class="js language-js">element
+  .div({ class: "example" })
+  .p({ textContent: "Example text" })
+  .end("p")
+  .img({ src: "example.png", alt: "example", title: "example" })
+  .end("div");
+</code></pre>
+<h3 id="functionsinwindowsinstallsimpljsinwindow">functions in windows: installSimpljsInWindow()</h3>
+<p>Import <code>installSimpljsInWindow</code> and add shorcuts.</p>
+<pre><code class="js language-js">import { installSimpljsInWindow } from "Simpljs";
+installSimpljsInWindow();
+</code></pre>
+<p><code>/!\ Warning /!\</code>
+Incompatible with jQuery or Lodash because of add of <code>$</code> and <code>_</code> as methods
+to <code>window</code> object.
+<code>/!\ Warning /!\</code></p>
+<h4 id="queryselectorshorthand">querySelector() shorthand</h4>
+<pre><code class="js language-js">$(selector) =&gt; document.querySelector(selector)
+</code></pre>
+<h4 id="queryselectorallshorthand">querySelectorAll() shorthand</h4>
+<pre><code class="js language-js">$$(selector) =&gt; document.querySelectorAll(selector)
+</code></pre>
+<h4 id="addeventlistenershorhand">addEventListener shorhand</h4>
+<pre><code class="js language-js">_("set", doSomethihg, "on click on", ".selector");
+_("once", doSomethihg, "on click on", "#selector");
+_("remove", doSomethihg, "on click on", '[data-custom="selector"]');
+</code></pre>
+<h4 id="addeventlisteneronvariouselementsatonceshorhand">addEventListener on various elements at once shorhand</h4>
+<pre><code class="js language-js">__("set", doSomethihg, "on click on", ".selector");
+__("once", doSomethihg, "on click on", "#selector");
+__("remove", doSomethihg, "on click on", '[data-custom="selector"]');
+</code></pre>
+<h2 id="author">Author</h2>
+<p>Juan-Claudio <a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#111;:&#x61;&#110;&#103;&#x65;&#101;l&#114;i&#99;&#x40;&#103;&#109;&#97;&#x69;&#x6c;&#46;&#x63;o&#x6d;">&#97;&#110;g&#101;e&#108;r&#105;&#99;&#64;&#103;&#x6d;&#x61;&#x69;&#108;&#46;&#x63;&#x6f;&#109;</a></p>

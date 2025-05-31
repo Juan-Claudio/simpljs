@@ -1,0 +1,15 @@
+.jsml-modal-container{
+    background-color: #080200;
+    border: solid 2px var(--mljs-secondary);
+    border-radius: 0px 15px 15px 15px;
+    box-sizing: border-box;
+    padding:10px;
+    position: absolute;
+    /*position*/left:15px; top:15px;
+    /*size*/width: 500px;
+    /*size*/height: 600px;
+    /*text*/text-align: center;
+}
+.jsml-modal-content{
+    font-family: 'Courier New', Courier, monospace;
+}
