@@ -5,5 +5,13 @@
   "description": "Write components and attach events simply.",
   "main": "index.js",
   "author": "Juan-Claudio",
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "Arm.js",
+    "index.js",
+    "JSMLComponent.js",
+    "JSMLFragment.js",
+    "simpljsWin.js",
+    "Waiter.js"
+  ]
 }
