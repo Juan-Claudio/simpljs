@@ -81,16 +81,15 @@ export default class JSMLComponent {
 
   static createJsmlTags(tagsObject) {
     for (const tag of tagsObject.nonSelfClosing) {
-      // Normal version
       JSMLComponent.prototype[tag] = function (attrs) {
-        return this._(tag, attrs, false, false);
+        return this._(tag, attrs);
       };
     }
 
+    // Self closing version
     for (const tag of tagsObject.selfClosing) {
-      // Self closing version
       JSMLComponent.prototype[tag] = function (attrs) {
-        return this._(tag, attrs, true, false);
+        return this._(tag, attrs, true);
       };
     }
   }
