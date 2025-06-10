@@ -185,7 +185,7 @@ class JSMLComponent {
   static createJsmlTags(tagsObject) {
     for (const tag of tagsObject.nonSelfClosing) {
       JSMLComponent.prototype[tag] = function (attrs) {
-        return JSMLComponent._(tag, attrs);
+        return this._(tag, attrs);
       };
     }
 
