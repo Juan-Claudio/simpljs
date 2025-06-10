@@ -179,13 +179,13 @@ class JSMLComponent {
   }
 
   static exists(name) {
-    return name in this.#components;
+    return name in JSMLComponent.#components;
   }
 
   static createJsmlTags(tagsObject) {
     for (const tag of tagsObject.nonSelfClosing) {
       JSMLComponent.prototype[tag] = function (attrs) {
-        return this._(tag, attrs);
+        return JSMLComponent._(tag, attrs);
       };
     }
 
@@ -245,6 +245,8 @@ class JSMLComponent {
   //setters
   data(obj) {
     this.#data = obj;
+    console.info(obj);
+    console.info(this.#data);
     return this;
   }
   setData(key, newVal) {
