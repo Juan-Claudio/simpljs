@@ -1,115 +1,115 @@
-class JSMLFragment {
-  self = document.createDocumentFragment();
-  opens = [];
-
-  /**
-   * Create a HTMLElement or a Text and append it to the last open parent
-   * or to the root if no open parent.
-   *
-   * The keys in object must match the Dom attributes name
-   * The data-* attribute must respect camelCase rule else it's ignored
-   *
-   * attributes prefixed with '_' will be interpreted (replace {{var}})
-   * else will not even if the attribute use '{{}}' syntax
-   *
-   * @param {string} tag - existing html tag name
-   * @param {Object} data - HTMLElement attributes as key
-   * @param {boolean} selfClosing
-   */
-  _(tag, data = {}, selfClosing = false) {
-    let el = {};
-
-    // Element with attributes containing variable "{{var}}"?
-    //const interpretableAttrs = [];
-
-    // Text with variable {{var}}?
-    //const isInterpretableText = tag === "_txt" ? true : false;
-    //if (tag === "_txt") tag = tag.slice(1);
-
-    if (tag !== "txt") {
-      el = document.createElement(tag);
-      Object.entries(data).forEach(([key, val]) => {
-        // if is attribute to interpret add it to list
-        //if (key[0] === "_") {
-        //  key = key.slice(1);
-        //  interpretableAttrs.push(key);
-        //}
-        // if is existing dom attribute name set it
-        if (el[key] !== undefined) el[key] = val;
-        // if is data-* type attribute set it
-        else if (/^data[A-Z][a-zA-Z0-9]*$/.test(key)) {
-          el.dataset[key.replace(/^data/, "")] = val;
-        }
-      });
-      // if exist attributes to interpret add attribute data-jsml-interprets
-      //if (interpretableAttrs.length > 0) {
-      //  el.dataset.jsmlInterprets = interpretableAttrs.join(" ");
-      //}
-    } else {
-      if (typeof data !== "string") {
-        throw new Error(".txt() only allow string as parameter");
-      }
-      el = document.createTextNode(data);
-    }
-    this.append(el, selfClosing /*, isInterpretableText*/);
-  }
-
-  /**
-   * Removes one or more parent elements from the stack so they can't receive
-   * any more children.
-   *
-   *    .end(1) and .end() → close the last parent, the fastest
-   *    .end(-1) → do the same but not the fastest pass by the second condition
-   *
-   * Positive values are converted to negative internally:
-   *    .end(-3) and .end(3) → both close the last 3 parent elements.
-   *
-   * The string "all" is the only accepted string value:
-   *    .end('all') → closes all parent elements.
-   *
-   * /!\ Warning /!\
-   *    .end(0) has the same effect as .end('all')
-   *
-   * @param {number|'all'} nb - Number of parent elements to close, or 'all'
-   * @returns {void}
-   */
-  end(nb = 1) {
-    if (nb === 1) this.opens.pop();
-    else if (nb === (nb | 0)) this.opens.splice(nb <= 0 ? nb : -nb);
-    else if (nb === "all") this.opens = [];
-  }
-
-  /**
-   * Append to the last open parent or to the root (fragment)
-   *
-   * @param {HTMLElement|Text} el - element to append to fragment
-   * @param {boolean} selfClosing - if is a self closing element
-   */
-  append(el, selfClosing = false /*, interpretableText = false*/) {
-    // append to last open parent
-    const opensLen = this.opens.length - 1;
-    if (opensLen === -1) {
-      this.self.appendChild(el);
-      //if (interpretableText) {
-      //  console.error(
-      //    "Text nodes not attached to a parent in a fragment will not be interpreted"
-      //  );
-      //}
-    } else {
-      this.opens[opensLen].appendChild(el);
-      // if is a text with {{var}} add to parent the marker to be interpreted
-      //if (interpretableText) {
-      //  this.opens[opensLen].dataset.jsmlInterprets =
-      //    (div.dataset.customAttr ?? "") + "textContent";
-      //}
-    }
-    // Add to the parents list if it can receive children,
-    // otherwise skip if it's a self-closing tag.
-    !selfClosing && this.opens.push(el);
-  }
-}
 class JSMLComponent {
   // static part
+  static JSMLFragment = class {
+    self = document.createDocumentFragment();
+    opens = [];
+
+    /**
+     * Create a HTMLElement or a Text and append it to the last open parent
+     * or to the root if no open parent.
+     *
+     * The keys in object must match the Dom attributes name
+     * The data-* attribute must respect camelCase rule else it's ignored
+     *
+     * attributes prefixed with '_' will be interpreted (replace {{var}})
+     * else will not even if the attribute use '{{}}' syntax
+     *
+     * @param {string} tag - existing html tag name
+     * @param {Object} data - HTMLElement attributes as key
+     * @param {boolean} selfClosing
+     */
+    _(tag, data = {}, selfClosing = false) {
+      let el = {};
+
+      // Element with attributes containing variable "{{var}}"?
+      //const interpretableAttrs = [];
+
+      // Text with variable {{var}}?
+      //const isInterpretableText = tag === "_txt" ? true : false;
+      //if (tag === "_txt") tag = tag.slice(1);
+
+      if (tag !== "txt") {
+        el = document.createElement(tag);
+        Object.entries(data).forEach(([key, val]) => {
+          // if is attribute to interpret add it to list
+          //if (key[0] === "_") {
+          //  key = key.slice(1);
+          //  interpretableAttrs.push(key);
+          //}
+          // if is existing dom attribute name set it
+          if (el[key] !== undefined) el[key] = val;
+          // if is data-* type attribute set it
+          else if (/^data[A-Z][a-zA-Z0-9]*$/.test(key)) {
+            el.dataset[key.replace(/^data/, "")] = val;
+          }
+        });
+        // if exist attributes to interpret add attribute data-jsml-interprets
+        //if (interpretableAttrs.length > 0) {
+        //  el.dataset.jsmlInterprets = interpretableAttrs.join(" ");
+        //}
+      } else {
+        if (typeof data !== "string") {
+          throw new Error(".txt() only allow string as parameter");
+        }
+        el = document.createTextNode(data);
+      }
+      this.append(el, selfClosing /*, isInterpretableText*/);
+    }
+
+    /**
+     * Removes one or more parent elements from the stack so they can't receive
+     * any more children.
+     *
+     *    .end(1) and .end() → close the last parent, the fastest
+     *    .end(-1) → do the same but not the fastest pass by the second condition
+     *
+     * Positive values are converted to negative internally:
+     *    .end(-3) and .end(3) → both close the last 3 parent elements.
+     *
+     * The string "all" is the only accepted string value:
+     *    .end('all') → closes all parent elements.
+     *
+     * /!\ Warning /!\
+     *    .end(0) has the same effect as .end('all')
+     *
+     * @param {number|'all'} nb - Number of parent elements to close, or 'all'
+     * @returns {void}
+     */
+    end(nb = 1) {
+      if (nb === 1) this.opens.pop();
+      else if (nb === (nb | 0)) this.opens.splice(nb <= 0 ? nb : -nb);
+      else if (nb === "all") this.opens = [];
+    }
+
+    /**
+     * Append to the last open parent or to the root (fragment)
+     *
+     * @param {HTMLElement|Text} el - element to append to fragment
+     * @param {boolean} selfClosing - if is a self closing element
+     */
+    append(el, selfClosing = false /*, interpretableText = false*/) {
+      // append to last open parent
+      const opensLen = this.opens.length - 1;
+      if (opensLen === -1) {
+        this.self.appendChild(el);
+        //if (interpretableText) {
+        //  console.error(
+        //    "Text nodes not attached to a parent in a fragment will not be interpreted"
+        //  );
+        //}
+      } else {
+        this.opens[opensLen].appendChild(el);
+        // if is a text with {{var}} add to parent the marker to be interpreted
+        //if (interpretableText) {
+        //  this.opens[opensLen].dataset.jsmlInterprets =
+        //    (div.dataset.customAttr ?? "") + "textContent";
+        //}
+      }
+      // Add to the parents list if it can receive children,
+      // otherwise skip if it's a self-closing tag.
+      !selfClosing && this.opens.push(el);
+    }
+  };
   static #components = {};
   // prettier-ignore
   static htmlTags = {
@@ -175,7 +175,9 @@ class JSMLComponent {
   }
 
   static isValidNodeName(name) {
-    return typeof name === "string" && /^[a-z]+(?:[A-Z][a-z0-9]*)*$/.test(name);
+    return (
+      typeof name === "string" && /^[a-z_]+(?:[A-Z_][a-z0-9_]*)*$/.test(name)
+    );
   }
 
   static exists(name) {
@@ -209,6 +211,7 @@ class JSMLComponent {
       this.#name = name;
       this.#data = data;
       this.#model = model;
+      this.#fragment = new JSMLComponent.JSMLFragment();
       JSMLComponent.#components[name] = this;
     } else if (name instanceof Node) {
       this.#fragment = name;
@@ -216,7 +219,7 @@ class JSMLComponent {
       this.#name = false;
       this.#model = false;
       this.#data = { jsmlNoData: true };
-      this.#fragment = new JSMLFragment();
+      this.#fragment = new JSMLComponent.JSMLFragment();
     }
   }
 
@@ -237,19 +240,23 @@ class JSMLComponent {
   get build() {
     if (this.#data.jsmlNoData) throw new Error("No data to build component");
     if (typeof this.#model !== "function") throw new Error("No model to build");
-    this.#fragment = new JSMLFragment();
-    this.#fragment.self = this.#model.call(new JSMLComponent(), this.#data).get;
+    this.#fragment = new JSMLComponent.JSMLFragment();
+    const newInstance = new JSMLComponent();
+    this.#fragment.self = this.#model.call(newInstance, this.#data).get;
     return this;
+  }
+  getModel() {
+    return this.#model;
   }
 
   //setters
-  data(obj) {
+  setData(obj) {
     this.#data = obj;
     console.info(obj);
     console.info(this.#data);
     return this;
   }
-  setData(key, newVal) {
+  alterData(key, newVal) {
     this.#data[key] = newVal;
     return this;
   }
@@ -264,8 +271,6 @@ class JSMLComponent {
   refresh(modifsObj) {
     return this.updateData(modifsObj).build;
   }
-
-  //checkers
 
   //principal methods
   _(tag, data = {}, simpleTag = false) {
@@ -357,9 +362,342 @@ class JSMLComponent {
       "element.innerHTML = 'replaceAllChildrenByHTMLcode'";
     console.info(helpMess);
   }
+
+  a(data) {
+    return this._("a", data, false);
+  }
+  abbr(data) {
+    return this._("abbr", data, false);
+  }
+  address(data) {
+    return this._("address", data, false);
+  }
+  article(data) {
+    return this._("article", data, false);
+  }
+  aside(data) {
+    return this._("aside", data, false);
+  }
+  audio(data) {
+    return this._("audio", data, false);
+  }
+  b(data) {
+    return this._("b", data, false);
+  }
+  bdi(data) {
+    return this._("bdi", data, false);
+  }
+  bdo(data) {
+    return this._("bdo", data, false);
+  }
+  blockquote(data) {
+    return this._("blockquote", data, false);
+  }
+  body(data) {
+    return this._("body", data, false);
+  }
+  button(data) {
+    return this._("button", data, false);
+  }
+  canvas(data) {
+    return this._("canvas", data, false);
+  }
+  caption(data) {
+    return this._("caption", data, false);
+  }
+  cite(data) {
+    return this._("cite", data, false);
+  }
+  code(data) {
+    return this._("code", data, false);
+  }
+  colgroup(data) {
+    return this._("colgroup", data, false);
+  }
+  data(data) {
+    return this._("data", data, false);
+  }
+  datalist(data) {
+    return this._("datalist", data, false);
+  }
+  dd(data) {
+    return this._("dd", data, false);
+  }
+  del(data) {
+    return this._("del", data, false);
+  }
+  details(data) {
+    return this._("details", data, false);
+  }
+  dfn(data) {
+    return this._("dfn", data, false);
+  }
+  dialog(data) {
+    return this._("dialog", data, false);
+  }
+  div(data) {
+    return this._("div", data, false);
+  }
+  dl(data) {
+    return this._("dl", data, false);
+  }
+  dt(data) {
+    return this._("dt", data, false);
+  }
+  em(data) {
+    return this._("em", data, false);
+  }
+  fieldset(data) {
+    return this._("fieldset", data, false);
+  }
+  figcaption(data) {
+    return this._("figcaption", data, false);
+  }
+  figure(data) {
+    return this._("figure", data, false);
+  }
+  footer(data) {
+    return this._("footer", data, false);
+  }
+  form(data) {
+    return this._("form", data, false);
+  }
+  h1(data) {
+    return this._("h1", data, false);
+  }
+  h2(data) {
+    return this._("h2", data, false);
+  }
+  h3(data) {
+    return this._("h3", data, false);
+  }
+  h4(data) {
+    return this._("h4", data, false);
+  }
+  h5(data) {
+    return this._("h5", data, false);
+  }
+  h6(data) {
+    return this._("h6", data, false);
+  }
+  head(data) {
+    return this._("head", data, false);
+  }
+  header(data) {
+    return this._("header", data, false);
+  }
+  hgroup(data) {
+    return this._("hgroup", data, false);
+  }
+  html(data) {
+    return this._("html", data, false);
+  }
+  i(data) {
+    return this._("i", data, false);
+  }
+  iframe(data) {
+    return this._("iframe", data, false);
+  }
+  ins(data) {
+    return this._("ins", data, false);
+  }
+  kbd(data) {
+    return this._("kbd", data, false);
+  }
+  label(data) {
+    return this._("label", data, false);
+  }
+  legend(data) {
+    return this._("legend", data, false);
+  }
+  li(data) {
+    return this._("li", data, false);
+  }
+  main(data) {
+    return this._("main", data, false);
+  }
+  map(data) {
+    return this._("map", data, false);
+  }
+  mark(data) {
+    return this._("mark", data, false);
+  }
+  meter(data) {
+    return this._("meter", data, false);
+  }
+  nav(data) {
+    return this._("nav", data, false);
+  }
+  noscript(data) {
+    return this._("noscript", data, false);
+  }
+  object(data) {
+    return this._("object", data, false);
+  }
+  ol(data) {
+    return this._("ol", data, false);
+  }
+  optgroup(data) {
+    return this._("optgroup", data, false);
+  }
+  option(data) {
+    return this._("option", data, false);
+  }
+  output(data) {
+    return this._("output", data, false);
+  }
+  p(data) {
+    return this._("p", data, false);
+  }
+  param(data) {
+    return this._("param", data, false);
+  }
+  picture(data) {
+    return this._("picture", data, false);
+  }
+  pre(data) {
+    return this._("pre", data, false);
+  }
+  progress(data) {
+    return this._("progress", data, false);
+  }
+  q(data) {
+    return this._("q", data, false);
+  }
+  rp(data) {
+    return this._("rp", data, false);
+  }
+  rt(data) {
+    return this._("rt", data, false);
+  }
+  ruby(data) {
+    return this._("ruby", data, false);
+  }
+  s(data) {
+    return this._("s", data, false);
+  }
+  samp(data) {
+    return this._("samp", data, false);
+  }
+  script(data) {
+    return this._("script", data, false);
+  }
+  section(data) {
+    return this._("section", data, false);
+  }
+  select(data) {
+    return this._("select", data, false);
+  }
+  small(data) {
+    return this._("small", data, false);
+  }
+  span(data) {
+    return this._("span", data, false);
+  }
+  strong(data) {
+    return this._("strong", data, false);
+  }
+  style(data) {
+    return this._("style", data, false);
+  }
+  sub(data) {
+    return this._("sub", data, false);
+  }
+  summary(data) {
+    return this._("summary", data, false);
+  }
+  sup(data) {
+    return this._("sup", data, false);
+  }
+  table(data) {
+    return this._("table", data, false);
+  }
+  tbody(data) {
+    return this._("tbody", data, false);
+  }
+  td(data) {
+    return this._("td", data, false);
+  }
+  template(data) {
+    return this._("template", data, false);
+  }
+  textarea(data) {
+    return this._("textarea", data, false);
+  }
+  tfoot(data) {
+    return this._("tfoot", data, false);
+  }
+  th(data) {
+    return this._("th", data, false);
+  }
+  thead(data) {
+    return this._("thead", data, false);
+  }
+  time(data) {
+    return this._("time", data, false);
+  }
+  title(data) {
+    return this._("title", data, false);
+  }
+  tr(data) {
+    return this._("tr", data, false);
+  }
+  u(data) {
+    return this._("u", data, false);
+  }
+  ul(data) {
+    return this._("ul", data, false);
+  }
+  var(data) {
+    return this._("var", data, false);
+  }
+  video(data) {
+    return this._("video", data, false);
+  }
+
+  //selfclosing tags
+  area(data) {
+    return this._("area", data, true);
+  }
+  base(data) {
+    return this._("base", data, true);
+  }
+  br(data) {
+    return this._("br", data, true);
+  }
+  col(data) {
+    return this._("col", data, true);
+  }
+  embed(data) {
+    return this._("embed", data, true);
+  }
+  hr(data) {
+    return this._("hr", data, true);
+  }
+  img(data) {
+    return this._("img", data, true);
+  }
+  input(data) {
+    return this._("input", data, true);
+  }
+  link(data) {
+    return this._("link", data, true);
+  }
+  meta(data) {
+    return this._("meta", data, true);
+  }
+  source(data) {
+    return this._("source", data, true);
+  }
+  track(data) {
+    return this._("track", data, true);
+  }
+  wbr(data) {
+    return this._("wbr", data, true);
+  }
 }
 // create the function .div(), a(), section()...
-JSMLComponent.createJsmlTags(JSMLComponent.htmlTags);
+//JSMLComponent.createJsmlTags(JSMLComponent.htmlTags);
 
 class Arm {
   event = "";
